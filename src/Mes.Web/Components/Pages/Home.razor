@@ -1,0 +1,59 @@
+﻿@page "/"
+
+<PageTitle>Painel da Frota · Mini MES</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-1">Painel da Frota</MudText>
+<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
+    Dados de exemplo — na Fase 2 o simulador vai movimentar estes equipamentos sozinho.
+</MudText>
+
+<MudGrid>
+    @foreach (var equipamento in _frota)
+    {
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2">
+                <MudCardContent>
+                    <div class="d-flex align-center justify-space-between mb-2">
+                        <MudText Typo="Typo.h6">@equipamento.Tag</MudText>
+                        <MudIcon Icon="@IconeDoTipo(equipamento.Tipo)" Color="Color.Primary" />
+                    </div>
+                    <MudText Typo="Typo.body2" Class="mb-3">@equipamento.Descricao</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="@CorDoEstado(equipamento.Estado)">
+                        @equipamento.Estado
+                    </MudChip>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    private readonly List<Equipamento> _frota =
+    [
+        new() { Tag = "CM-101", Descricao = "Caminhão fora de estrada 240 t", Tipo = "Caminhão", Estado = EstadoEquipamento.Operando },
+        new() { Tag = "CM-102", Descricao = "Caminhão fora de estrada 240 t", Tipo = "Caminhão", Estado = EstadoEquipamento.ParadaOperacional },
+        new() { Tag = "CM-103", Descricao = "Caminhão fora de estrada 240 t", Tipo = "Caminhão", Estado = EstadoEquipamento.Manutencao },
+        new() { Tag = "EH-201", Descricao = "Escavadeira hidráulica 42 m³", Tipo = "Escavadeira", Estado = EstadoEquipamento.Operando },
+        new() { Tag = "BR-301", Descricao = "Britador primário giratório", Tipo = "Britador", Estado = EstadoEquipamento.Operando },
+        new() { Tag = "TC-401", Descricao = "Transportador de correia TC-401", Tipo = "Correia", Estado = EstadoEquipamento.Reserva },
+        new() { Tag = "CM-104", Descricao = "Caminhão fora de estrada 240 t", Tipo = "Caminhão", Estado = EstadoEquipamento.Manutencao },
+        new() { Tag = "EH-202", Descricao = "Escavadeira hidráulica 42 m³", Tipo = "Escavadeira", Estado = EstadoEquipamento.ParadaOperacional },
+    ];
+
+    private static Color CorDoEstado(EstadoEquipamento estado) => estado switch
+    {
+        EstadoEquipamento.Operando => Color.Success,
+        EstadoEquipamento.ParadaOperacional => Color.Warning,
+        EstadoEquipamento.Manutencao => Color.Error,
+        _ => Color.Default
+    };
+
+    private static string IconeDoTipo(string tipo) => tipo switch
+    {
+        "Caminhão" => Icons.Material.Filled.LocalShipping,
+        "Escavadeira" => Icons.Material.Filled.Agriculture,
+        "Britador" => Icons.Material.Filled.Hardware,
+        "Correia" => Icons.Material.Filled.LinearScale,
+        _ => Icons.Material.Filled.Construction
+    };
+}
