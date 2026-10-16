@@ -1,11 +1,30 @@
 ﻿@page "/"
+@inject EquipamentoService Servico
 
 <PageTitle>Painel da Frota · Mini MES</PageTitle>
 
 <MudText Typo="Typo.h4" Class="mb-1">Painel da Frota</MudText>
 <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
-    Dados de exemplo — na Fase 2 o simulador vai movimentar estes equipamentos sozinho.
+    Estado atual dos equipamentos — na Fase 2 o simulador vai movimentar a frota sozinho.
 </MudText>
+
+@if (_frota is null)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    return;
+}
+
+<MudGrid Class="mb-4">
+    @foreach (var estado in Enum.GetValues<EstadoEquipamento>())
+    {
+        <MudItem xs="6" md="3">
+            <MudPaper Elevation="1" Class="pa-4">
+                <MudText Typo="Typo.caption" Color="Color.Secondary">@estado.Descricao()</MudText>
+                <MudText Typo="Typo.h4" Color="@CorDoEstado(estado)">@_frota.Count(e => e.Estado == estado)</MudText>
+            </MudPaper>
+        </MudItem>
+    }
+</MudGrid>
 
 <MudGrid>
     @foreach (var equipamento in _frota)
@@ -15,11 +34,12 @@
                 <MudCardContent>
                     <div class="d-flex align-center justify-space-between mb-2">
                         <MudText Typo="Typo.h6">@equipamento.Tag</MudText>
-                        <MudIcon Icon="@IconeDoTipo(equipamento.Tipo)" Color="Color.Primary" />
+                        <MudIcon Icon="@IconeDoTipo(equipamento.Modelo.Tipo)" Color="Color.Primary" />
                     </div>
-                    <MudText Typo="Typo.body2" Class="mb-3">@equipamento.Descricao</MudText>
+                    <MudText Typo="Typo.body2">@equipamento.Modelo.Nome</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-3 d-block">@equipamento.Area.Nome</MudText>
                     <MudChip T="string" Size="Size.Small" Color="@CorDoEstado(equipamento.Estado)">
-                        @equipamento.Estado
+                        @equipamento.Estado.Descricao()
                     </MudChip>
                 </MudCardContent>
             </MudCard>
@@ -28,32 +48,10 @@
 </MudGrid>
 
 @code {
-    private readonly List<Equipamento> _frota =
-    [
-        new() { Tag = "CM-101", Descricao = "Caminhão fora de estrada 240 t", Tipo = "Caminhão", Estado = EstadoEquipamento.Operando },
-        new() { Tag = "CM-102", Descricao = "Caminhão fora de estrada 240 t", Tipo = "Caminhão", Estado = EstadoEquipamento.ParadaOperacional },
-        new() { Tag = "CM-103", Descricao = "Caminhão fora de estrada 240 t", Tipo = "Caminhão", Estado = EstadoEquipamento.Manutencao },
-        new() { Tag = "EH-201", Descricao = "Escavadeira hidráulica 42 m³", Tipo = "Escavadeira", Estado = EstadoEquipamento.Operando },
-        new() { Tag = "BR-301", Descricao = "Britador primário giratório", Tipo = "Britador", Estado = EstadoEquipamento.Operando },
-        new() { Tag = "TC-401", Descricao = "Transportador de correia TC-401", Tipo = "Correia", Estado = EstadoEquipamento.Reserva },
-        new() { Tag = "CM-104", Descricao = "Caminhão fora de estrada 240 t", Tipo = "Caminhão", Estado = EstadoEquipamento.Manutencao },
-        new() { Tag = "EH-202", Descricao = "Escavadeira hidráulica 42 m³", Tipo = "Escavadeira", Estado = EstadoEquipamento.ParadaOperacional },
-    ];
+    private List<Equipamento>? _frota;
 
-    private static Color CorDoEstado(EstadoEquipamento estado) => estado switch
+    protected override async Task OnInitializedAsync()
     {
-        EstadoEquipamento.Operando => Color.Success,
-        EstadoEquipamento.ParadaOperacional => Color.Warning,
-        EstadoEquipamento.Manutencao => Color.Error,
-        _ => Color.Default
-    };
-
-    private static string IconeDoTipo(string tipo) => tipo switch
-    {
-        "Caminhão" => Icons.Material.Filled.LocalShipping,
-        "Escavadeira" => Icons.Material.Filled.Agriculture,
-        "Britador" => Icons.Material.Filled.Hardware,
-        "Correia" => Icons.Material.Filled.LinearScale,
-        _ => Icons.Material.Filled.Construction
-    };
+        _frota = await Servico.ListarAsync();
+    }
 }

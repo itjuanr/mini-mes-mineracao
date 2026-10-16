@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Mes.Domain\Mes.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Mes.Infrastructure\Mes.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

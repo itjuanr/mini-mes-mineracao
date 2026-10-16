@@ -1,0 +1,101 @@
+@inject EquipamentoService Servico
+
+<MudDialog>
+    <DialogContent>
+        @if (_erro is not null)
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4" Dense="true">@_erro</MudAlert>
+        }
+
+        <MudTextField @bind-Value="_tag" Label="Tag" Placeholder="Ex.: CM-105" MaxLength="EquipamentoService.TamanhoMaximoTag"
+                      HelperText="Identificação única do equipamento" Variant="Variant.Outlined" Class="mb-4" />
+
+        <MudSelect T="int" @bind-Value="_modeloId" Label="Modelo" Variant="Variant.Outlined" Class="mb-4"
+                   ToStringFunc="@(id => _modelos.FirstOrDefault(m => m.Id == id)?.Nome ?? string.Empty)">
+            @foreach (var modelo in _modelos)
+            {
+                <MudSelectItem T="int" Value="modelo.Id">@modelo.Nome (@modelo.Tipo.Descricao())</MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudSelect T="int" @bind-Value="_areaId" Label="Área" Variant="Variant.Outlined" Class="mb-4"
+                   ToStringFunc="@(id => NomeDaArea(_areas.FirstOrDefault(a => a.Id == id)))">
+            @foreach (var area in _areas)
+            {
+                <MudSelectItem T="int" Value="area.Id">@NomeDaArea(area)</MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudSelect T="EstadoEquipamento" @bind-Value="_estado" Label="Estado" Variant="Variant.Outlined"
+                   ToStringFunc="@(e => e.Descricao())">
+            @foreach (var estado in Enum.GetValues<EstadoEquipamento>())
+            {
+                <MudSelectItem T="EstadoEquipamento" Value="estado">@estado.Descricao()</MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="() => MudDialog.Cancel()">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Salvar" Disabled="_salvando">Salvar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    /// <summary>Equipamento a editar; null para um novo.</summary>
+    [Parameter] public Equipamento? Equipamento { get; set; }
+
+    private List<ModeloEquipamento> _modelos = [];
+    private List<Area> _areas = [];
+
+    private string _tag = string.Empty;
+    private int _modeloId;
+    private int _areaId;
+    private EstadoEquipamento _estado = EstadoEquipamento.Reserva;
+
+    private string? _erro;
+    private bool _salvando;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _modelos = await Servico.ListarModelosAsync();
+        _areas = await Servico.ListarAreasAsync();
+
+        if (Equipamento is not null)
+        {
+            _tag = Equipamento.Tag;
+            _modeloId = Equipamento.ModeloId;
+            _areaId = Equipamento.AreaId;
+            _estado = Equipamento.Estado;
+        }
+    }
+
+    private static string NomeDaArea(Area? area) => area is null ? string.Empty : $"{area.Site.Nome} / {area.Nome}";
+
+    private async Task Salvar()
+    {
+        _erro = null;
+        _salvando = true;
+        try
+        {
+            await Servico.SalvarAsync(new Equipamento
+            {
+                Id = Equipamento?.Id ?? 0,
+                Tag = _tag,
+                ModeloId = _modeloId,
+                AreaId = _areaId,
+                Estado = _estado
+            });
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (RegraDeNegocioException ex)
+        {
+            _erro = ex.Message;
+        }
+        finally
+        {
+            _salvando = false;
+        }
+    }
+}

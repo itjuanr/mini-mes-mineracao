@@ -3,9 +3,14 @@
   <ItemGroup>
     <ProjectReference Include="..\Mes.Domain\Mes.Domain.csproj" />
     <ProjectReference Include="..\Mes.Simulator\Mes.Simulator.csproj" />
+    <ProjectReference Include="..\Mes.Infrastructure\Mes.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="MudBlazor" Version="7.15.0" />
   </ItemGroup>
 

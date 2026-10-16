@@ -8,15 +8,16 @@ Sistema MES (Manufacturing Execution System) simplificado para mineração: apon
 
 - **.NET 8 / C#**
 - **Blazor Server + MudBlazor** (interface)
-- **Entity Framework Core** (persistência) — *Fase 1*
+- **Entity Framework Core + SQLite** (persistência, com migrations)
 - **xUnit** (testes)
 
 ## Estrutura
 
 ```
 src/
-  Mes.Domain/     regras de negócio (equipamentos, estados, paradas, turnos)
-  Mes.Simulator/  simulador da frota gerando eventos
+  Mes.Domain/          regras de negócio (equipamentos, estados, paradas, turnos)
+  Mes.Infrastructure/  banco de dados (EF Core) e serviços
+  Mes.Simulator/       simulador da frota gerando eventos
   Mes.Web/        interface web e API
 tests/
   Mes.Tests/      testes automatizados
@@ -35,7 +36,7 @@ Acesse http://localhost:5290
 ## Roadmap
 
 - [x] **Fase 0** — Estrutura do projeto e painel inicial
-- [ ] **Fase 1** — Cadastro de ativos (Site → Área → Equipamento)
+- [x] **Fase 1** — Cadastro de ativos (Site → Área → Equipamento)
 - [ ] **Fase 2** — Simulador de frota (máquina de estados)
 - [ ] **Fase 3** — Painel em tempo real
 - [ ] **Fase 4** — Paradas e árvore de motivos

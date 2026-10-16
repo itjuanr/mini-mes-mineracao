@@ -1,0 +1,62 @@
+@page "/estrutura"
+@inject EquipamentoService Servico
+
+<PageTitle>Estrutura · Mini MES</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-1">Estrutura de Ativos</MudText>
+<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
+    Hierarquia Site → Área → Equipamento (modelo ISA-95).
+</MudText>
+
+@if (_sites is null)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    return;
+}
+
+@foreach (var site in _sites)
+{
+    <MudPaper Elevation="1" Class="pa-4 mb-6">
+        <div class="d-flex align-center gap-2 mb-4">
+            <MudIcon Icon="@Icons.Material.Filled.Landscape" Color="Color.Primary" />
+            <MudText Typo="Typo.h5">@site.Nome</MudText>
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">@site.Codigo</MudChip>
+        </div>
+
+        <MudGrid>
+            @foreach (var area in site.Areas.OrderBy(a => a.Nome))
+            {
+                <MudItem xs="12" md="6">
+                    <MudCard Outlined="true">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@area.Nome</MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                    @area.Codigo · @area.Equipamentos.Count equipamento(s)
+                                </MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            @foreach (var equipamento in area.Equipamentos.OrderBy(e => e.Tag))
+                            {
+                                <MudChip T="string" Icon="@IconeDoTipo(equipamento.Modelo.Tipo)"
+                                         Color="@CorDoEstado(equipamento.Estado)" Variant="Variant.Text">
+                                    @equipamento.Tag
+                                </MudChip>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudPaper>
+}
+
+@code {
+    private List<Site>? _sites;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _sites = await Servico.ListarEstruturaAsync();
+    }
+}

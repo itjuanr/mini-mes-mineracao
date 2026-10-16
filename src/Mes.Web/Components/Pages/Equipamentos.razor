@@ -1,0 +1,97 @@
+@page "/equipamentos"
+@inject EquipamentoService Servico
+@inject IDialogService Dialogos
+@inject ISnackbar Avisos
+
+<PageTitle>Equipamentos · Mini MES</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-1">Equipamentos</MudText>
+<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
+    Cadastro da frota: tag, modelo, área e estado.
+</MudText>
+
+<MudTable Items="_equipamentos" Loading="_equipamentos is null" Filter="new Func<Equipamento, bool>(Filtrar)"
+          Hover="true" Elevation="1" Breakpoint="Breakpoint.Sm">
+    <ToolBarContent>
+        <MudTextField @bind-Value="_busca" Placeholder="Buscar por tag, modelo ou área" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" Immediate="true" Clearable="true" Class="mt-0" />
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="() => AbrirFormulario(null)">
+            Novo
+        </MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Tag</MudTh>
+        <MudTh>Modelo</MudTh>
+        <MudTh>Tipo</MudTh>
+        <MudTh>Área</MudTh>
+        <MudTh>Estado</MudTh>
+        <MudTh Style="text-align:right">Ações</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Tag"><b>@context.Tag</b></MudTd>
+        <MudTd DataLabel="Modelo">@context.Modelo.Nome</MudTd>
+        <MudTd DataLabel="Tipo">@context.Modelo.Tipo.Descricao()</MudTd>
+        <MudTd DataLabel="Área">@context.Area.Site.Codigo / @context.Area.Nome</MudTd>
+        <MudTd DataLabel="Estado">
+            <MudChip T="string" Size="Size.Small" Color="@CorDoEstado(context.Estado)">@context.Estado.Descricao()</MudChip>
+        </MudTd>
+        <MudTd DataLabel="Ações" Style="text-align:right">
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="() => AbrirFormulario(context)" />
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="() => Excluir(context)" />
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText Class="pa-4">Nenhum equipamento encontrado.</MudText>
+    </NoRecordsContent>
+</MudTable>
+
+@code {
+    private List<Equipamento>? _equipamentos;
+    private string _busca = string.Empty;
+
+    protected override async Task OnInitializedAsync() => await Carregar();
+
+    private async Task Carregar() => _equipamentos = await Servico.ListarAsync();
+
+    private bool Filtrar(Equipamento e) =>
+        string.IsNullOrWhiteSpace(_busca)
+        || e.Tag.Contains(_busca, StringComparison.OrdinalIgnoreCase)
+        || e.Modelo.Nome.Contains(_busca, StringComparison.OrdinalIgnoreCase)
+        || e.Area.Nome.Contains(_busca, StringComparison.OrdinalIgnoreCase);
+
+    private async Task AbrirFormulario(Equipamento? equipamento)
+    {
+        var parametros = new DialogParameters<EquipamentoDialog> { { d => d.Equipamento, equipamento } };
+        var titulo = equipamento is null ? "Novo equipamento" : $"Editar {equipamento.Tag}";
+        var dialogo = await Dialogos.ShowAsync<EquipamentoDialog>(titulo, parametros,
+            new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true });
+
+        var resultado = await dialogo.Result;
+        if (resultado is { Canceled: false })
+        {
+            Avisos.Add("Equipamento salvo.", Severity.Success);
+            await Carregar();
+        }
+    }
+
+    private async Task Excluir(Equipamento equipamento)
+    {
+        var confirmou = await Dialogos.ShowMessageBox("Excluir equipamento",
+            $"Tem certeza que deseja excluir {equipamento.Tag}?", yesText: "Excluir", cancelText: "Cancelar");
+        if (confirmou != true)
+            return;
+
+        try
+        {
+            await Servico.ExcluirAsync(equipamento.Id);
+            Avisos.Add($"{equipamento.Tag} excluído.", Severity.Info);
+            await Carregar();
+        }
+        catch (RegraDeNegocioException ex)
+        {
+            Avisos.Add(ex.Message, Severity.Error);
+        }
+    }
+}
