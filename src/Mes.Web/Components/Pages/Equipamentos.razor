@@ -5,45 +5,70 @@
 
 <PageTitle>Equipamentos · Mini MES</PageTitle>
 
-<MudText Typo="Typo.h4" Class="mb-1">Equipamentos</MudText>
-<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
-    Cadastro da frota: tag, modelo, área e estado.
-</MudText>
+<div class="mes-page-header">
+    <div>
+        <h1>Equipamentos</h1>
+        <p class="mes-muted">Cadastro da frota: tag, modelo, área e estado</p>
+    </div>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Add"
+               OnClick="() => AbrirFormulario(null)" DropShadow="false">
+        Novo equipamento
+    </MudButton>
+</div>
 
 <MudTable Items="_equipamentos" Loading="_equipamentos is null" Filter="new Func<Equipamento, bool>(Filtrar)"
-          Hover="true" Elevation="1" Breakpoint="Breakpoint.Sm">
+          Hover="true" Elevation="0" Outlined="true" Breakpoint="Breakpoint.Sm" Class="mes-tabela">
     <ToolBarContent>
         <MudTextField @bind-Value="_busca" Placeholder="Buscar por tag, modelo ou área" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" Immediate="true" Clearable="true" Class="mt-0" />
+                      AdornmentIcon="@Icons.Material.Rounded.Search" Immediate="true" Clearable="true"
+                      Variant="Variant.Outlined" Margin="Margin.Dense" Style="max-width:360px" />
         <MudSpacer />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="() => AbrirFormulario(null)">
-            Novo
-        </MudButton>
+        @if (_equipamentos is not null)
+        {
+            <span class="mes-muted mes-pequeno">@_equipamentos.Count(Filtrar) de @_equipamentos.Count equipamentos</span>
+        }
     </ToolBarContent>
     <HeaderContent>
         <MudTh>Tag</MudTh>
         <MudTh>Modelo</MudTh>
         <MudTh>Tipo</MudTh>
-        <MudTh>Área</MudTh>
+        <MudTh>Localização</MudTh>
         <MudTh>Estado</MudTh>
         <MudTh Style="text-align:right">Ações</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Tag"><b>@context.Tag</b></MudTd>
-        <MudTd DataLabel="Modelo">@context.Modelo.Nome</MudTd>
-        <MudTd DataLabel="Tipo">@context.Modelo.Tipo.Descricao()</MudTd>
-        <MudTd DataLabel="Área">@context.Area.Site.Codigo / @context.Area.Nome</MudTd>
-        <MudTd DataLabel="Estado">
-            <MudChip T="string" Size="Size.Small" Color="@CorDoEstado(context.Estado)">@context.Estado.Descricao()</MudChip>
+        <MudTd DataLabel="Tag"><span class="mes-mono"><b>@context.Tag</b></span></MudTd>
+        <MudTd DataLabel="Modelo">
+            <div class="mes-celula-dupla">
+                <span>@context.Modelo.Nome</span>
+                <span class="mes-muted mes-pequeno">@context.Modelo.Fabricante</span>
+            </div>
         </MudTd>
-        <MudTd DataLabel="Ações" Style="text-align:right">
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="() => AbrirFormulario(context)" />
-            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="() => Excluir(context)" />
+        <MudTd DataLabel="Tipo">
+            <div class="d-flex align-center gap-2">
+                <MudIcon Icon="@IconeDoTipo(context.Modelo.Tipo)" Size="Size.Small" Class="mes-muted" />
+                @context.Modelo.Tipo.Descricao()
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Localização">
+            <div class="mes-celula-dupla">
+                <span>@context.Area.Nome</span>
+                <span class="mes-muted mes-pequeno">@context.Area.Site.Nome</span>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Estado"><EstadoBadge Estado="context.Estado" /></MudTd>
+        <MudTd DataLabel="Ações" Style="text-align:right; white-space:nowrap">
+            <MudTooltip Text="Editar">
+                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="() => AbrirFormulario(context)" />
+            </MudTooltip>
+            <MudTooltip Text="Excluir">
+                <MudIconButton Icon="@Icons.Material.Rounded.DeleteOutline" Size="Size.Small" Color="Color.Error"
+                               OnClick="() => Excluir(context)" />
+            </MudTooltip>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText Class="pa-4">Nenhum equipamento encontrado.</MudText>
+        <div class="pa-8 mes-muted">Nenhum equipamento encontrado.</div>
     </NoRecordsContent>
 </MudTable>
 

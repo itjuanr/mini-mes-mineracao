@@ -3,10 +3,16 @@
 
 <PageTitle>Painel da Frota · Mini MES</PageTitle>
 
-<MudText Typo="Typo.h4" Class="mb-1">Painel da Frota</MudText>
-<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
-    Estado atual dos equipamentos — na Fase 2 o simulador vai movimentar a frota sozinho.
-</MudText>
+<div class="mes-page-header">
+    <div>
+        <h1>Painel da Frota</h1>
+        <p class="mes-muted">Estado atual dos equipamentos do complexo</p>
+    </div>
+    <MudButton Href="equipamentos" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+               StartIcon="@Icons.Material.Rounded.Tune">
+        Gerenciar frota
+    </MudButton>
+</div>
 
 @if (_frota is null)
 {
@@ -14,44 +20,79 @@
     return;
 }
 
-<MudGrid Class="mb-4">
+<div class="mes-kpis">
+    <div class="mes-kpi" style="--cor: var(--mud-palette-primary)">
+        <div class="mes-kpi-topo">
+            <span class="mes-kpi-rotulo">Frota total</span>
+            <span class="mes-kpi-icone"><MudIcon Icon="@Icons.Material.Rounded.Inventory2" Size="Size.Small" /></span>
+        </div>
+        <div class="mes-kpi-valor">@_frota.Count</div>
+        <div class="mes-kpi-rodape">equipamentos em @_areas.Count áreas</div>
+    </div>
+
     @foreach (var estado in Enum.GetValues<EstadoEquipamento>())
     {
-        <MudItem xs="6" md="3">
-            <MudPaper Elevation="1" Class="pa-4">
-                <MudText Typo="Typo.caption" Color="Color.Secondary">@estado.Descricao()</MudText>
-                <MudText Typo="Typo.h4" Color="@CorDoEstado(estado)">@_frota.Count(e => e.Estado == estado)</MudText>
-            </MudPaper>
-        </MudItem>
+        var quantidade = _frota.Count(e => e.Estado == estado);
+        <div class="mes-kpi @ClasseDoEstado(estado)" style="--cor: var(--cor-estado)">
+            <div class="mes-kpi-topo">
+                <span class="mes-kpi-rotulo">@estado.Descricao()</span>
+                <span class="mes-kpi-icone"><MudIcon Icon="@IconeDoEstado(estado)" Size="Size.Small" /></span>
+            </div>
+            <div class="mes-kpi-valor">@quantidade</div>
+            <div class="mes-kpi-rodape">@Percentual(quantidade, _frota.Count)% da frota</div>
+        </div>
     }
-</MudGrid>
+</div>
 
-<MudGrid>
-    @foreach (var equipamento in _frota)
-    {
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudCard Elevation="2">
-                <MudCardContent>
-                    <div class="d-flex align-center justify-space-between mb-2">
-                        <MudText Typo="Typo.h6">@equipamento.Tag</MudText>
-                        <MudIcon Icon="@IconeDoTipo(equipamento.Modelo.Tipo)" Color="Color.Primary" />
+<div class="mes-painel">
+    <div class="mes-painel-topo">
+        <span class="mes-painel-titulo">Distribuição da frota</span>
+        <span class="mes-muted mes-pequeno">
+            Fora de manutenção:
+            <b>@Percentual(_frota.Count(e => e.Estado != EstadoEquipamento.Manutencao), _frota.Count)%</b>
+        </span>
+    </div>
+    <DistribuicaoEstados Equipamentos="_frota" MostrarLegenda="true" />
+</div>
+
+@foreach (var area in _areas)
+{
+    <div class="mes-secao">
+        <MudIcon Icon="@Icons.Material.Rounded.Place" Size="Size.Small" Class="mes-muted" />
+        <h2>@area.Key</h2>
+        <span class="mes-contador">@area.Count()</span>
+    </div>
+
+    <div class="mes-frota">
+        @foreach (var equipamento in area)
+        {
+            <div class="mes-equip @ClasseDoEstado(equipamento.Estado)">
+                <div class="mes-equip-topo">
+                    <div>
+                        <div class="mes-equip-tag">@equipamento.Tag</div>
+                        <div class="mes-equip-tipo">@equipamento.Modelo.Tipo.Descricao()</div>
                     </div>
-                    <MudText Typo="Typo.body2">@equipamento.Modelo.Nome</MudText>
-                    <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-3 d-block">@equipamento.Area.Nome</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="@CorDoEstado(equipamento.Estado)">
-                        @equipamento.Estado.Descricao()
-                    </MudChip>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    }
-</MudGrid>
+                    <div class="mes-equip-icone">
+                        <MudIcon Icon="@IconeDoTipo(equipamento.Modelo.Tipo)" Size="Size.Small" />
+                    </div>
+                </div>
+                <div class="mes-equip-modelo">@equipamento.Modelo.Nome</div>
+                <div class="mes-equip-rodape">
+                    <EstadoBadge Estado="equipamento.Estado" />
+                    <span class="mes-muted mes-pequeno">@equipamento.Modelo.Fabricante</span>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 @code {
     private List<Equipamento>? _frota;
+    private List<IGrouping<string, Equipamento>> _areas = [];
 
     protected override async Task OnInitializedAsync()
     {
         _frota = await Servico.ListarAsync();
+        _areas = _frota.GroupBy(e => e.Area.Nome).OrderBy(g => g.Key).ToList();
     }
 }

@@ -1,0 +1,335 @@
+/* ==========================================================================
+   Mini MES — identidade visual
+   As cores de base vêm do tema MudBlazor (var(--mud-palette-*)), então
+   tudo aqui funciona no modo claro e no escuro.
+   ========================================================================== */
+
+:root {
+    --estado-operando: #22C55E;
+    --estado-parada: #EAB308;
+    --estado-manutencao: #EF4444;
+    --estado-reserva: #94A3B8;
+    --mes-raio: 12px;
+    --mes-borda: 1px solid var(--mud-palette-lines-default);
+}
+
+.estado-operando { --cor-estado: var(--estado-operando); }
+.estado-parada { --cor-estado: var(--estado-parada); }
+.estado-manutencao { --cor-estado: var(--estado-manutencao); }
+.estado-reserva { --cor-estado: var(--estado-reserva); }
+
+/* ---------- utilitários ---------- */
+
+.mes-muted { color: var(--mud-palette-text-secondary) !important; }
+.mes-mono { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; }
+.mes-pequeno { font-size: .78rem; }
+
+/* ---------- layout ---------- */
+
+.mes-appbar {
+    border-bottom: var(--mes-borda);
+    backdrop-filter: blur(8px);
+}
+
+.mes-marca { display: flex; align-items: center; gap: 10px; }
+
+.mes-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    color: #1A1204;
+    background: linear-gradient(135deg, #FBBF24, #F97316);
+    box-shadow: 0 4px 14px rgba(249, 115, 22, .35);
+}
+
+.mes-marca-nome { font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; line-height: 1.1; }
+.mes-marca-sub { font-size: .7rem; color: var(--mud-palette-text-secondary); letter-spacing: .06em; text-transform: uppercase; }
+
+.mes-relogio {
+    align-items: center;
+    gap: 10px;
+    padding: 4px 6px 4px 4px;
+    border: var(--mes-borda);
+    border-radius: 999px;
+    margin-right: 8px;
+    font-size: .8rem;
+}
+
+.mes-turno {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    color: var(--mud-palette-primary);
+    background: color-mix(in srgb, var(--mud-palette-primary) 15%, transparent);
+}
+
+.mes-drawer { border-right: var(--mes-borda); }
+
+.mes-nav-secao {
+    padding: 20px 20px 6px;
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mes-drawer .mud-nav-link {
+    border-radius: 8px;
+    margin: 2px 10px;
+    width: calc(100% - 20px);
+    padding: 8px 12px;
+    font-size: .9rem;
+}
+
+.mes-drawer .mud-nav-link-text { flex-grow: 1; }
+
+.mud-button-root { text-transform: none; font-weight: 600; letter-spacing: 0; }
+
+.mes-drawer .mud-nav-link.active {
+    font-weight: 600;
+    background: color-mix(in srgb, var(--mud-palette-primary) 14%, transparent);
+}
+
+.mes-breve {
+    margin-left: auto;
+    font-size: .62rem;
+    padding: 1px 7px;
+    border-radius: 999px;
+    border: var(--mes-borda);
+    color: var(--mud-palette-text-secondary);
+}
+
+.mes-drawer-rodape {
+    margin-top: auto;
+    padding: 16px 20px;
+    border-top: var(--mes-borda);
+    font-size: .75rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+/* ---------- cabeçalho de página ---------- */
+
+.mes-page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.mes-page-header h1 { font-size: 1.65rem; font-weight: 700; letter-spacing: -.02em; margin: 0; }
+.mes-page-header p { margin: 4px 0 0; font-size: .9rem; }
+
+/* ---------- KPIs ---------- */
+
+.mes-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.mes-kpi,
+.mes-painel {
+    background: var(--mud-palette-surface);
+    border: var(--mes-borda);
+    border-radius: var(--mes-raio);
+}
+
+.mes-kpi { padding: 16px 18px; }
+
+.mes-kpi-topo { display: flex; align-items: center; justify-content: space-between; }
+.mes-kpi-rotulo { font-size: .8rem; font-weight: 500; color: var(--mud-palette-text-secondary); }
+
+.mes-kpi-icone {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    color: var(--cor);
+    background: color-mix(in srgb, var(--cor) 15%, transparent);
+}
+
+.mes-kpi-valor { font-size: 2.1rem; font-weight: 700; line-height: 1.1; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.mes-kpi-rodape { font-size: .75rem; color: var(--mud-palette-text-secondary); margin-top: 2px; }
+
+/* ---------- painel e barra de distribuição ---------- */
+
+.mes-painel { padding: 18px 20px; }
+
+.mes-painel-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.mes-painel-titulo { font-weight: 600; font-size: .95rem; }
+
+.mes-distribuicao {
+    display: flex;
+    gap: 3px;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--mud-palette-lines-default);
+}
+
+.mes-distribuicao > div { height: 100%; background: var(--cor-estado); transition: width .4s ease; }
+
+.mes-legenda { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: .8rem; }
+.mes-legenda span { display: inline-flex; align-items: center; gap: 6px; color: var(--mud-palette-text-secondary); }
+.mes-legenda span::before { content: ""; width: 8px; height: 8px; border-radius: 3px; background: var(--cor-estado); }
+.mes-legenda b { color: var(--mud-palette-text-primary); }
+
+/* ---------- seção de área ---------- */
+
+.mes-secao { display: flex; align-items: center; gap: 10px; margin: 30px 0 12px; }
+.mes-secao h2 { font-size: 1rem; font-weight: 600; margin: 0; }
+
+.mes-contador {
+    font-size: .72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    color: var(--mud-palette-text-secondary);
+    background: var(--mud-palette-lines-default);
+}
+
+/* ---------- card de equipamento ---------- */
+
+.mes-frota {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+    gap: 14px;
+}
+
+.mes-equip {
+    position: relative;
+    overflow: hidden;
+    padding: 16px 16px 14px 20px;
+    background: var(--mud-palette-surface);
+    border: var(--mes-borda);
+    border-radius: var(--mes-raio);
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.mes-equip::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--cor-estado);
+}
+
+.mes-equip:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--cor-estado) 55%, var(--mud-palette-lines-default));
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .22);
+}
+
+.mes-equip-topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.mes-equip-tag { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-weight: 700; font-size: 1.1rem; }
+.mes-equip-tipo { font-size: .75rem; color: var(--mud-palette-text-secondary); }
+
+.mes-equip-icone {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    color: var(--mud-palette-primary);
+    background: color-mix(in srgb, var(--mud-palette-primary) 12%, transparent);
+}
+
+.mes-equip-modelo { margin-top: 12px; font-size: .85rem; }
+
+.mes-equip-rodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--mud-palette-lines-default);
+}
+
+/* ---------- badge de estado ---------- */
+
+.mes-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 10px 3px 8px;
+    border-radius: 999px;
+    font-size: .74rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--cor-estado);
+    background: color-mix(in srgb, var(--cor-estado) 14%, transparent);
+}
+
+.mes-badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.mes-badge.estado-operando::before { animation: mes-pulso 1.8s ease-out infinite; }
+
+@keyframes mes-pulso {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--estado-operando) 70%, transparent); }
+    70% { box-shadow: 0 0 0 6px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ---------- tabela ---------- */
+
+.mes-tabela.mud-table { border-radius: var(--mes-raio); }
+
+.mes-tabela .mud-table-head .mud-table-cell {
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mes-celula-dupla { display: flex; flex-direction: column; line-height: 1.3; }
+
+/* ---------- estrutura ---------- */
+
+.mes-areas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 14px;
+}
+
+.mes-area {
+    border: var(--mes-borda);
+    border-radius: var(--mes-raio);
+    padding: 16px;
+    background: var(--mud-palette-background);
+}
+
+.mes-area .mes-distribuicao { height: 6px; margin: 12px 0 8px; }
+
+.mes-area-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 4px;
+    border-bottom: 1px dashed var(--mud-palette-lines-default);
+}
+
+.mes-area-item:last-child { border-bottom: none; }

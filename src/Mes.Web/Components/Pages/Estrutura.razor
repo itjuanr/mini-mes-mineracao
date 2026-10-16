@@ -3,10 +3,12 @@
 
 <PageTitle>Estrutura · Mini MES</PageTitle>
 
-<MudText Typo="Typo.h4" Class="mb-1">Estrutura de Ativos</MudText>
-<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
-    Hierarquia Site → Área → Equipamento (modelo ISA-95).
-</MudText>
+<div class="mes-page-header">
+    <div>
+        <h1>Estrutura de Ativos</h1>
+        <p class="mes-muted">Hierarquia Site → Área → Equipamento (modelo ISA-95)</p>
+    </div>
+</div>
 
 @if (_sites is null)
 {
@@ -16,40 +18,50 @@
 
 @foreach (var site in _sites)
 {
-    <MudPaper Elevation="1" Class="pa-4 mb-6">
-        <div class="d-flex align-center gap-2 mb-4">
-            <MudIcon Icon="@Icons.Material.Filled.Landscape" Color="Color.Primary" />
-            <MudText Typo="Typo.h5">@site.Nome</MudText>
-            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">@site.Codigo</MudChip>
+    var equipamentosDoSite = site.Areas.SelectMany(a => a.Equipamentos).ToList();
+
+    <div class="mes-painel mb-6">
+        <div class="mes-painel-topo">
+            <div class="d-flex align-center gap-3">
+                <div class="mes-logo"><MudIcon Icon="@Icons.Material.Rounded.Landscape" Size="Size.Small" /></div>
+                <div>
+                    <div class="mes-painel-titulo">@site.Nome</div>
+                    <div class="mes-muted mes-pequeno">
+                        <span class="mes-mono">@site.Codigo</span> · @site.Areas.Count áreas · @equipamentosDoSite.Count equipamentos
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <MudGrid>
+        <div class="mes-areas mt-4">
             @foreach (var area in site.Areas.OrderBy(a => a.Nome))
             {
-                <MudItem xs="12" md="6">
-                    <MudCard Outlined="true">
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.h6">@area.Nome</MudText>
-                                <MudText Typo="Typo.caption" Color="Color.Secondary">
-                                    @area.Codigo · @area.Equipamentos.Count equipamento(s)
-                                </MudText>
-                            </CardHeaderContent>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            @foreach (var equipamento in area.Equipamentos.OrderBy(e => e.Tag))
-                            {
-                                <MudChip T="string" Icon="@IconeDoTipo(equipamento.Modelo.Tipo)"
-                                         Color="@CorDoEstado(equipamento.Estado)" Variant="Variant.Text">
-                                    @equipamento.Tag
-                                </MudChip>
-                            }
-                        </MudCardContent>
-                    </MudCard>
-                </MudItem>
+                <div class="mes-area">
+                    <div class="d-flex justify-space-between align-center">
+                        <div>
+                            <div class="mes-painel-titulo">@area.Nome</div>
+                            <div class="mes-muted mes-pequeno mes-mono">@site.Codigo / @area.Codigo</div>
+                        </div>
+                        <span class="mes-contador">@area.Equipamentos.Count</span>
+                    </div>
+
+                    <DistribuicaoEstados Equipamentos="area.Equipamentos" />
+
+                    @foreach (var equipamento in area.Equipamentos.OrderBy(e => e.Tag))
+                    {
+                        <div class="mes-area-item">
+                            <MudIcon Icon="@IconeDoTipo(equipamento.Modelo.Tipo)" Size="Size.Small" Class="mes-muted" />
+                            <div class="mes-celula-dupla flex-grow-1">
+                                <span class="mes-mono"><b>@equipamento.Tag</b></span>
+                                <span class="mes-muted mes-pequeno">@equipamento.Modelo.Nome</span>
+                            </div>
+                            <EstadoBadge Estado="equipamento.Estado" />
+                        </div>
+                    }
+                </div>
             }
-        </MudGrid>
-    </MudPaper>
+        </div>
+    </div>
 }
 
 @code {

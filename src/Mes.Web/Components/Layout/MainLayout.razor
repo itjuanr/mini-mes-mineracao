@@ -6,30 +6,58 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="0" Dense="true">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                       OnClick="() => _menuAberto = !_menuAberto" />
-        <MudIcon Icon="@Icons.Material.Filled.Factory" Class="mx-2" />
-        <MudText Typo="Typo.h6">Mini MES · Mineração</MudText>
+    <MudAppBar Elevation="0" Class="mes-appbar">
+        <MudIconButton Icon="@Icons.Material.Rounded.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                       OnClick="() => _menuAberto = !_menuAberto" Class="mr-2" />
+        <div class="mes-marca">
+            <div class="mes-logo"><MudIcon Icon="@Icons.Material.Rounded.Landscape" Size="Size.Small" /></div>
+            <div>
+                <div class="mes-marca-nome">Mini MES</div>
+                <div class="mes-marca-sub">Mineração</div>
+            </div>
+        </div>
         <MudSpacer />
-        <MudIconButton Icon="@(_modoEscuro ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
-                       Color="Color.Inherit" OnClick="() => _modoEscuro = !_modoEscuro" />
+        <Relogio />
+        <MudTooltip Text="@(_modoEscuro ? "Modo claro" : "Modo escuro")">
+            <MudIconButton Icon="@(_modoEscuro ? Icons.Material.Rounded.LightMode : Icons.Material.Rounded.DarkMode)"
+                           Color="Color.Inherit" OnClick="() => _modoEscuro = !_modoEscuro" />
+        </MudTooltip>
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_menuAberto" ClipMode="DrawerClipMode.Always" Elevation="1">
-        <MudNavMenu>
-            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Painel da Frota</MudNavLink>
-            <MudNavLink Href="estrutura" Icon="@Icons.Material.Filled.AccountTree">Estrutura</MudNavLink>
-            <MudNavLink Href="equipamentos" Icon="@Icons.Material.Filled.Construction">Equipamentos</MudNavLink>
-            <MudNavLink Disabled="true" Icon="@Icons.Material.Filled.PauseCircle">Paradas</MudNavLink>
-            <MudNavLink Disabled="true" Icon="@Icons.Material.Filled.Scale">Produção</MudNavLink>
-            <MudNavLink Disabled="true" Icon="@Icons.Material.Filled.LocalGasStation">Consumo</MudNavLink>
-            <MudNavLink Disabled="true" Icon="@Icons.Material.Filled.Insights">Indicadores</MudNavLink>
-        </MudNavMenu>
+    <MudDrawer @bind-Open="_menuAberto" ClipMode="DrawerClipMode.Always" Elevation="0" Class="mes-drawer" Width="248px">
+        <div class="d-flex flex-column" style="height:100%">
+            <MudNavMenu>
+                <div class="mes-nav-secao">Operação</div>
+                <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.SpaceDashboard">Painel da Frota</MudNavLink>
+                <MudNavLink Href="estrutura" Icon="@Icons.Material.Rounded.AccountTree">Estrutura</MudNavLink>
+                <MudNavLink Disabled="true" Icon="@Icons.Material.Rounded.PauseCircle">
+                    <div class="d-flex align-center">Paradas <span class="mes-breve">em breve</span></div>
+                </MudNavLink>
+
+                <div class="mes-nav-secao">Cadastros</div>
+                <MudNavLink Href="equipamentos" Icon="@Icons.Material.Rounded.Construction">Equipamentos</MudNavLink>
+
+                <div class="mes-nav-secao">Análise</div>
+                <MudNavLink Disabled="true" Icon="@Icons.Material.Rounded.Scale">
+                    <div class="d-flex align-center">Produção <span class="mes-breve">em breve</span></div>
+                </MudNavLink>
+                <MudNavLink Disabled="true" Icon="@Icons.Material.Rounded.LocalGasStation">
+                    <div class="d-flex align-center">Consumo <span class="mes-breve">em breve</span></div>
+                </MudNavLink>
+                <MudNavLink Disabled="true" Icon="@Icons.Material.Rounded.Insights">
+                    <div class="d-flex align-center">Indicadores <span class="mes-breve">em breve</span></div>
+                </MudNavLink>
+            </MudNavMenu>
+
+            <div class="mes-drawer-rodape">
+                Complexo Serra Azul<br />
+                <span class="mes-mono">v0.1 · Fase 1</span>
+            </div>
+        </div>
     </MudDrawer>
 
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-8 px-4 px-md-8">
             @Body
         </MudContainer>
     </MudMainContent>
@@ -47,19 +75,48 @@
 
     private readonly MudTheme _tema = new()
     {
-        PaletteLight = new PaletteLight
-        {
-            Primary = "#E87722",
-            AppbarBackground = "#1F2A33",
-        },
         PaletteDark = new PaletteDark
         {
-            Primary = "#F59E0B",
-            Background = "#12171C",
-            Surface = "#1B232B",
-            DrawerBackground = "#161D23",
-            AppbarBackground = "#161D23",
+            Primary = "#5B9BFF",
+            Secondary = "#8B97A6",
+            Success = "#22C55E",
+            Warning = "#EAB308",
+            Error = "#EF4444",
+            Info = "#38BDF8",
+            Background = "#0D1117",
+            Surface = "#151B23",
+            DrawerBackground = "#10151C",
+            DrawerText = "#C9D1D9",
+            DrawerIcon = "#8B97A6",
+            AppbarBackground = "rgba(13,17,23,0.85)",
+            AppbarText = "#E6EDF3",
+            TextPrimary = "#E6EDF3",
+            TextSecondary = "#8B97A6",
+            ActionDefault = "#8B97A6",
+            LinesDefault = "#242C37",
+            TableLines = "#242C37",
+            TableHover = "#1A222C",
+            Divider = "#242C37",
         },
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#2563EB",
+            Secondary = "#64748B",
+            Success = "#16A34A",
+            Warning = "#CA8A04",
+            Error = "#DC2626",
+            Background = "#F5F7FA",
+            Surface = "#FFFFFF",
+            DrawerBackground = "#FFFFFF",
+            AppbarBackground = "rgba(255,255,255,0.85)",
+            AppbarText = "#0F172A",
+            TextPrimary = "#0F172A",
+            TextSecondary = "#64748B",
+            LinesDefault = "#E4E8EE",
+            TableLines = "#E4E8EE",
+            Divider = "#E4E8EE",
+        },
+        LayoutProperties = new LayoutProperties { DefaultBorderRadius = "10px" },
         Typography = new Typography
         {
             Default = new Default { FontFamily = ["Inter", "Roboto", "sans-serif"] }

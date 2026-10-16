@@ -1,0 +1,28 @@
+@* Barra horizontal com a proporção de equipamentos em cada estado. *@
+
+<div class="mes-distribuicao">
+    @foreach (var estado in Enum.GetValues<EstadoEquipamento>())
+    {
+        var quantidade = Equipamentos.Count(e => e.Estado == estado);
+        if (quantidade > 0)
+        {
+            <div class="@ClasseDoEstado(estado)" style="width:@(Percentual(quantidade, Equipamentos.Count))%"
+                 title="@estado.Descricao(): @quantidade"></div>
+        }
+    }
+</div>
+
+@if (MostrarLegenda)
+{
+    <div class="mes-legenda">
+        @foreach (var estado in Enum.GetValues<EstadoEquipamento>())
+        {
+            <span class="@ClasseDoEstado(estado)">@estado.Descricao() <b>@Equipamentos.Count(e => e.Estado == estado)</b></span>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyCollection<Equipamento> Equipamentos { get; set; } = [];
+    [Parameter] public bool MostrarLegenda { get; set; }
+}

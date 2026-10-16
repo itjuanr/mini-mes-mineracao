@@ -1,0 +1,22 @@
+@implements IDisposable
+
+<div class="mes-relogio d-none d-sm-flex">
+    <span class="mes-turno">Turno @Turnos.Identificar(TimeOnly.FromDateTime(_agora))</span>
+    <span class="mes-mono">@_agora.ToString("HH:mm:ss")</span>
+</div>
+
+@code {
+    private DateTime _agora = DateTime.Now;
+    private System.Threading.Timer? _timer;
+
+    protected override void OnInitialized()
+    {
+        _timer = new System.Threading.Timer(_ =>
+        {
+            _agora = DateTime.Now;
+            InvokeAsync(StateHasChanged);
+        }, null, 1000, 1000);
+    }
+
+    public void Dispose() => _timer?.Dispose();
+}
